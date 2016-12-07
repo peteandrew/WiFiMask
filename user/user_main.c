@@ -1,91 +1,113 @@
-/*
- * ----------------------------------------------------------------------------
- * "THE BEER-WARE LICENSE" (Revision 42):
- * Jeroen Domburg <jeroen@spritesmods.com> wrote this file. As long as you retain
- * this notice you can do whatever you want with this stuff. If we meet some day,
- * and you think this stuff is worth it, you can buy me a beer in return.
- * ----------------------------------------------------------------------------
- */
-
 #include <esp8266.h>
-#include "httpd.h"
-#include "httpdespfs.h"
-#include "cgi.h"
 #include "stdout.h"
-//#include "auth.h"
-#include "espfs.h"
-#include "captdns.h"
-#include "webpages-espfs.h"
 #include "ws2812_i2s.h"
 #include "leds.h"
 #include "pattern.h"
 
 
-/*
-This is the main url->function dispatching data struct.
-In short, it's a struct with various URLs plus their handlers. The handlers can
-be 'standard' CGI functions you wrote, or 'special' CGIs requiring an argument.
-They can also be auth-functions. An asterisk will match any url starting with
-everything before the asterisks; "*" matches everything. The list will be
-handled top-down, so make sure to put more specific rules above the more
-general ones. Authorization things (like authBasic) act as a 'barrier' and
-should be placed above the URLs they protect.
-*/
-HttpdBuiltInUrl builtInUrls[]={
-	{"*", cgiRedirectApClientToHostname, "esp8266.nonet"},
-	{"/", cgiRedirect, "/index.tpl"},
-	{"/index.tpl", cgiEspFsTemplate, tplLeds},
-	{"/index.cgi", cgiLeds, NULL},
-	{"*", cgiEspFsHook, NULL}, //Catch-all cgi function for the filesystem
-	{NULL, NULL, NULL}
-};
-
-
+// 0 - all red
+// 1 - all green
+// 2 - all blue
+uint8_t mode = 0;
 uint8_t constClr[3];
 uint8_t last_leds[512*3] = {0};
 uint32_t frame = 0;
 
+uint8_t buttonShortPress = 0;
+uint8_t buttonLongPress = 0;
+
+
 static ETSTimer pattern_timer;
 static void ICACHE_FLASH_ATTR patternTimer(void *arg) {
+	if (buttonShortPress) {
+		if (++mode > 2) {
+			mode = 0;
+		}
+		buttonShortPress = 0;
+		os_printf("\nMode: %d\n", mode);
+	}
+	if (buttonLongPress) {
+		switch(mode) {
+			case 0:
+				incrementRed();
+				os_printf("\nIncrement red\n");
+				break;
+			case 1:
+				incrementBlue();
+				os_printf("\nIncrement blue\n");
+				break;
+			case 2:
+				incrementGreen();
+				os_printf("\nIncrement green\n");
+				break;
+		}
+		buttonLongPress = 0;
+	}
+
 	constClr[0] = getRed();
 	constClr[1] = getGreen();
 	constClr[2] = getBlue();
 
   int it;
   for(it=0; it<getNumLeds(); ++it) {
-		uint32_t hex = hex_pattern( getPattern(), it, getNumLeds(), frame, constClr );
-		last_leds[3*it+0] = (hex>>8);
-		last_leds[3*it+1] = (hex);
-		last_leds[3*it+2] = (hex>>16);
+		//uint32_t hex = hex_pattern( getPattern(), it, getNumLeds(), frame, constClr );
+		//last_leds[3*it+0] = (hex>>8);
+		//last_leds[3*it+1] = (hex);
+		//last_leds[3*it+2] = (hex>>16);
+		last_leds[3*it+0] = constClr[0];
+		last_leds[3*it+1] = constClr[1];
+		last_leds[3*it+2] = constClr[2];
   }
 	frame++;
-	// os_printf("Frame: %d\n", (int)frame);
   ws2812_push( last_leds, 3*getNumLeds());
 }
 
-//Main routine. Initialize stdout, the I/O, filesystem and the webserver and we're done.
+
+static ETSTimer button_timer;
+static void ICACHE_FLASH_ATTR buttonTimer(void *arg) {
+  static int downCnt = 0;
+	static int previousLongPress = 0;
+
+	if (!GPIO_INPUT_GET(0)) {
+		downCnt++;
+		if (previousLongPress || downCnt > 10) {
+			buttonLongPress = 1;
+			previousLongPress = 1;
+			downCnt = 0;
+			os_printf("\nLong button press\n");
+		}
+	} else {
+		if (downCnt > 2 && !buttonLongPress) {
+			buttonShortPress = 1;
+			previousLongPress = 0;
+			os_printf("\nShort button press\n");
+		}
+		downCnt = 0;
+		previousLongPress = 0;
+	}
+}
+
 void user_init(void) {
 	stdoutInit();
-	captdnsInit();
 
-	// 0x40200000 is the base address for spi flash memory mapping, ESPFS_POS is the position
-	// where image is written in flash that is defined in Makefile.
-#ifdef ESPFS_POS
-	espFsInit((void*)(0x40200000 + ESPFS_POS));
-#else
-	espFsInit((void*)(webpages_espfs_start));
-#endif
+	wifi_station_disconnect();
+  wifi_set_opmode(NULL_MODE); 	 	 // set WiFi mode to null mode.
+	wifi_set_sleep_type(MODEM_SLEEP_T);
 
-	httpdInit(builtInUrls, 80);
+	PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO0_U, FUNC_GPIO0); // Set GPIO0 function
+	gpio_output_set(0, 0, 0, 1);
 
 	ws2812_init();
 	os_timer_disarm(&pattern_timer);
 	os_timer_setfn(&pattern_timer, patternTimer, NULL);
 	os_timer_arm(&pattern_timer, 20, 1);
 
+	os_timer_disarm(&button_timer);
+	os_timer_setfn(&button_timer, buttonTimer, NULL);
+	os_timer_arm(&button_timer, 50, 1);
+
 	os_printf("\nReady\n");
 }
 
-void user_rf_pre_init() {
-	//Not needed, but some SDK versions want this defined.
+void user_rf_pre_init(void) {
 }
