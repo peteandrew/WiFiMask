@@ -8,8 +8,16 @@
 // 0 - all red
 // 1 - all green
 // 2 - all blue
+// 3 - left eyebrow red
+// 4 - left eyebrow green
+// 5 - left eyebrow blue
+// 6 - right eyebrow red
+// 7 - right eyebrow green
+// 8 - right eyebrow blue
+// 9 - tash red
+// 10 - tash green
+// 11 - tash blue
 uint8_t mode = 0;
-uint8_t constClr[3];
 uint8_t last_leds[512*3] = {0};
 uint32_t frame = 0;
 
@@ -20,7 +28,7 @@ uint8_t buttonLongPress = 0;
 static ETSTimer pattern_timer;
 static void ICACHE_FLASH_ATTR patternTimer(void *arg) {
 	if (buttonShortPress) {
-		if (++mode > 2) {
+		if (++mode > 11) {
 			mode = 0;
 		}
 		buttonShortPress = 0;
@@ -30,35 +38,96 @@ static void ICACHE_FLASH_ATTR patternTimer(void *arg) {
 		switch(mode) {
 			case 0:
 				incrementRed();
-				os_printf("\nIncrement red\n");
+				os_printf("\nIncrement all red\n");
 				break;
 			case 1:
 				incrementBlue();
-				os_printf("\nIncrement blue\n");
+				os_printf("\nIncrement all blue\n");
 				break;
 			case 2:
 				incrementGreen();
-				os_printf("\nIncrement green\n");
+				os_printf("\nIncrement all green\n");
+				break;
+			case 3:
+			  incrementLeftEyebrowRed();
+				os_printf("\nIncrement left eyebrow red\n");
+				break;
+			case 4:
+			  incrementLeftEyebrowBlue();
+				os_printf("\nIncrement left eyebrow blue\n");
+				break;
+			case 5:
+			  incrementLeftEyebrowGreen();
+				os_printf("\nIncrement left eyebrow green\n");
+				break;
+			case 6:
+			  incrementRightEyebrowRed();
+				os_printf("\nIncrement right eyebrow red\n");
+				break;
+			case 7:
+			  incrementRightEyebrowBlue();
+				os_printf("\nIncrement right eyebrow blue\n");
+				break;
+			case 8:
+			  incrementRightEyebrowGreen();
+				os_printf("\nIncrement right eyebrow green\n");
+				break;
+			case 9:
+			  incrementTashRed();
+				os_printf("\nIncrement tash red\n");
+				break;
+			case 10:
+			  incrementTashBlue();
+				os_printf("\nIncrement tash blue\n");
+				break;
+			case 11:
+			  incrementTashGreen();
+				os_printf("\nIncrement tash green\n");
 				break;
 		}
 		buttonLongPress = 0;
 	}
 
-	constClr[0] = getRed();
-	constClr[1] = getGreen();
-	constClr[2] = getBlue();
+	int it;
+	// Left eyebrow
+	for (it=0; it<4; ++it) {
+		if (mode < 3) {
+			last_leds[3*it+0] = getRed();
+			last_leds[3*it+1] = getBlue();
+			last_leds[3*it+2] = getGreen();
+		} else {
+			last_leds[3*it+0] = getLeftEyebrowRed();
+			last_leds[3*it+1] = getLeftEyebrowBlue();
+			last_leds[3*it+2] = getLeftEyebrowGreen();
+		}
+	}
+	// Right eyebrow
+	for (it=4; it<8; ++it) {
+		if (mode < 3) {
+			last_leds[3*it+0] = getRed();
+			last_leds[3*it+1] = getBlue();
+			last_leds[3*it+2] = getGreen();
+		} else {
+			last_leds[3*it+0] = getRightEyebrowRed();
+			last_leds[3*it+1] = getRightEyebrowBlue();
+			last_leds[3*it+2] = getRightEyebrowGreen();
+		}
+	}
+	// Tash
+	for (it=8; it<12; ++it) {
+		if (mode < 3) {
+			last_leds[3*it+0] = getRed();
+			last_leds[3*it+1] = getBlue();
+			last_leds[3*it+2] = getGreen();
+		} else {
+			last_leds[3*it+0] = getTashRed();
+			last_leds[3*it+1] = getTashBlue();
+			last_leds[3*it+2] = getTashGreen();
+		}
+	}
 
-  int it;
-  for(it=0; it<getNumLeds(); ++it) {
-		//uint32_t hex = hex_pattern( getPattern(), it, getNumLeds(), frame, constClr );
-		//last_leds[3*it+0] = (hex>>8);
-		//last_leds[3*it+1] = (hex);
-		//last_leds[3*it+2] = (hex>>16);
-		last_leds[3*it+0] = constClr[0];
-		last_leds[3*it+1] = constClr[1];
-		last_leds[3*it+2] = constClr[2];
-  }
 	frame++;
+
   ws2812_push( last_leds, 3*getNumLeds());
 }
 
