@@ -8,10 +8,6 @@
 static uint16_t leds = 12;
 static uint8_t patternNum = 1;
 
-static uint8_t red = 0;
-static uint8_t green = 0;
-static uint8_t blue = 0;
-
 static uint8_t leftEyebrowRed = 0;
 static uint8_t leftEyebrowGreen = 0;
 static uint8_t leftEyebrowBlue = 0;
@@ -39,34 +35,19 @@ void ICACHE_FLASH_ATTR setPattern(uint8_t pattern) {
 }
 
 uint8_t ICACHE_FLASH_ATTR getRed() {
-  return red;
+  return 0;
 }
-void ICACHE_FLASH_ATTR incrementRed() {
-  if (++red > MAX_RED) red = 0;
-}
-void ICACHE_FLASH_ATTR setRed(uint8_t value) {
-  red = value;
-}
+void ICACHE_FLASH_ATTR setRed(uint8_t value) {}
 
 uint8_t ICACHE_FLASH_ATTR getGreen() {
-  return green;
+  return 0;
 }
-void ICACHE_FLASH_ATTR incrementGreen() {
-  if (++green > MAX_GREEN) green = 0;
-}
-void ICACHE_FLASH_ATTR setGreen(uint8_t value) {
-  green = value;
-}
+void ICACHE_FLASH_ATTR setGreen(uint8_t value) {}
 
 uint8_t ICACHE_FLASH_ATTR getBlue() {
-  return blue;
+  return 0;
 }
-void ICACHE_FLASH_ATTR incrementBlue() {
-  if (++blue > MAX_BLUE) blue = 0;
-}
-void ICACHE_FLASH_ATTR setBlue(uint8_t value) {
-  blue = value;
-}
+void ICACHE_FLASH_ATTR setBlue(uint8_t value) {}
 
 uint8_t ICACHE_FLASH_ATTR getLeftEyebrowRed() {
   return leftEyebrowRed;

@@ -5,18 +5,15 @@
 #include "pattern.h"
 
 
-// 0 - all red
-// 1 - all green
-// 2 - all blue
-// 3 - left eyebrow red
-// 4 - left eyebrow green
-// 5 - left eyebrow blue
-// 6 - right eyebrow red
-// 7 - right eyebrow green
-// 8 - right eyebrow blue
-// 9 - tash red
-// 10 - tash green
-// 11 - tash blue
+// 0 - left eyebrow red
+// 1 - left eyebrow green
+// 2 - left eyebrow blue
+// 3 - right eyebrow red
+// 4 - right eyebrow green
+// 5 - right eyebrow blue
+// 6 - tash red
+// 7 - tash green
+// 8 - tash blue
 uint8_t mode = 0;
 uint8_t last_leds[512*3] = {0};
 uint32_t frame = 0;
@@ -28,7 +25,7 @@ uint8_t buttonLongPress = 0;
 static ETSTimer pattern_timer;
 static void ICACHE_FLASH_ATTR patternTimer(void *arg) {
 	if (buttonShortPress) {
-		if (++mode > 11) {
+		if (++mode > 8) {
 			mode = 0;
 		}
 		buttonShortPress = 0;
@@ -37,50 +34,38 @@ static void ICACHE_FLASH_ATTR patternTimer(void *arg) {
 	if (buttonLongPress) {
 		switch(mode) {
 			case 0:
-				incrementRed();
-				os_printf("\nIncrement all red\n");
-				break;
-			case 1:
-				incrementBlue();
-				os_printf("\nIncrement all blue\n");
-				break;
-			case 2:
-				incrementGreen();
-				os_printf("\nIncrement all green\n");
-				break;
-			case 3:
 			  incrementLeftEyebrowRed();
 				os_printf("\nIncrement left eyebrow red\n");
 				break;
-			case 4:
+			case 1:
 			  incrementLeftEyebrowBlue();
 				os_printf("\nIncrement left eyebrow blue\n");
 				break;
-			case 5:
+			case 2:
 			  incrementLeftEyebrowGreen();
 				os_printf("\nIncrement left eyebrow green\n");
 				break;
-			case 6:
+			case 3:
 			  incrementRightEyebrowRed();
 				os_printf("\nIncrement right eyebrow red\n");
 				break;
-			case 7:
+			case 4:
 			  incrementRightEyebrowBlue();
 				os_printf("\nIncrement right eyebrow blue\n");
 				break;
-			case 8:
+			case 5:
 			  incrementRightEyebrowGreen();
 				os_printf("\nIncrement right eyebrow green\n");
 				break;
-			case 9:
+			case 6:
 			  incrementTashRed();
 				os_printf("\nIncrement tash red\n");
 				break;
-			case 10:
+			case 7:
 			  incrementTashBlue();
 				os_printf("\nIncrement tash blue\n");
 				break;
-			case 11:
+			case 8:
 			  incrementTashGreen();
 				os_printf("\nIncrement tash green\n");
 				break;
@@ -91,39 +76,21 @@ static void ICACHE_FLASH_ATTR patternTimer(void *arg) {
 	int it;
 	// Tash
 	for (it=0; it<4; ++it) {
-		if (mode < 3) {
-			last_leds[3*it+0] = getRed();
-			last_leds[3*it+1] = getBlue();
-			last_leds[3*it+2] = getGreen();
-		} else {
-			last_leds[3*it+0] = getTashRed();
-			last_leds[3*it+1] = getTashBlue();
-			last_leds[3*it+2] = getTashGreen();
-		}
+		last_leds[3*it+0] = getTashRed();
+		last_leds[3*it+1] = getTashBlue();
+		last_leds[3*it+2] = getTashGreen();
 	}
 	// Right eyebrow
 	for (it=4; it<8; ++it) {
-		if (mode < 3) {
-			last_leds[3*it+0] = getRed();
-			last_leds[3*it+1] = getBlue();
-			last_leds[3*it+2] = getGreen();
-		} else {
-			last_leds[3*it+0] = getRightEyebrowRed();
-			last_leds[3*it+1] = getRightEyebrowBlue();
-			last_leds[3*it+2] = getRightEyebrowGreen();
-		}
+		last_leds[3*it+0] = getRightEyebrowRed();
+		last_leds[3*it+1] = getRightEyebrowBlue();
+		last_leds[3*it+2] = getRightEyebrowGreen();
 	}
 	// Left eyebrow
 	for (it=8; it<12; ++it) {
-		if (mode < 3) {
-			last_leds[3*it+0] = getRed();
-			last_leds[3*it+1] = getBlue();
-			last_leds[3*it+2] = getGreen();
-		} else {
-			last_leds[3*it+0] = getLeftEyebrowRed();
-			last_leds[3*it+1] = getLeftEyebrowBlue();
-			last_leds[3*it+2] = getLeftEyebrowGreen();
-		}
+		last_leds[3*it+0] = getLeftEyebrowRed();
+		last_leds[3*it+1] = getLeftEyebrowBlue();
+		last_leds[3*it+2] = getLeftEyebrowGreen();
 	}
 
 	frame++;
