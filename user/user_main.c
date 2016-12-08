@@ -113,7 +113,7 @@ static void ICACHE_FLASH_ATTR buttonTimer(void *arg) {
 			os_printf("\nLong button press\n");
 		}
 	} else {
-		if (downCnt > 2 && !buttonLongPress) {
+		if (downCnt > 4 && !buttonLongPress) {
 			buttonShortPress = 1;
 			previousLongPress = 0;
 			os_printf("\nShort button press\n");
