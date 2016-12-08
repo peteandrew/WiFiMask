@@ -26,7 +26,7 @@ void incrementLeftEyebrowValue();
 
 float getRightEyebrowHue();
 void incrementRightEyebrowHue();
-float getrightEyebrowSat();
+float getRightEyebrowSat();
 void incrementRightEyebrowSat();
 float getRightEyebrowValue();
 void incrementRightEyebrowValue();

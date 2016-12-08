@@ -15,14 +15,15 @@
 // 7 - static tash sat
 // 8 - static tash value
 // 9 - moving dot using feature colour
-		// Check if currDotLed == it
 // 10 - moving dot using feature colour different intensity per feature led
-		// Multiply saturation by (it % 4) / 4
-// 11 - colour cycle different colour per feature
-// 12 - moving dot colour cycle
+// 11 - moving dot colour cycle
 uint8_t mode = 0;
 uint8_t last_leds[512*3] = {0};
 uint32_t frame = 0;
+
+float colourCycleHue = 0.05;
+float colourCycleSat = 1;
+float colourCycleValue = 0.05;
 
 uint8_t buttonShortPress = 0;
 uint8_t buttonLongPress = 0;
@@ -31,7 +32,7 @@ uint8_t buttonLongPress = 0;
 static ETSTimer pattern_timer;
 static void ICACHE_FLASH_ATTR patternTimer(void *arg) {
 	if (buttonShortPress) {
-		if (++mode > 12) {
+		if (++mode > 11) {
 			mode = 0;
 		}
 		buttonShortPress = 0;
@@ -79,14 +80,33 @@ static void ICACHE_FLASH_ATTR patternTimer(void *arg) {
 		buttonLongPress = 0;
 	}
 
-	int currDotLed = frame % 12;
+	int currDotLed = (frame/5) % 24;
+	if (frame % 12 == 0) {
+  	colourCycleHue += 0.01;
+		if (colourCycleHue > 1) {
+			colourCycleHue = 0;
+		}
+	}
 
 	int it;
-	uint32_t rgb;
+	uint32_t rgb = 0;
 	// Tash
 	for (it=0; it<4; ++it) {
+		rgb = 0;
 		if (mode < 9) {
 			rgb = HSVtoHEX(getTashHue(), getTashSat(), getTashValue());
+		} else {
+			switch (mode) {
+				case 9:
+				  if (currDotLed == it) rgb = HSVtoHEX(getTashHue(), getTashSat(), getTashValue());
+					break;
+				case 10:
+					rgb = HSVtoHEX(getTashHue(), getTashSat(), (currDotLed - it == 1 || currDotLed - it == 0) * (((float)(it % 4) + 1.0) / 4.0) * getTashValue());
+					break;
+				case 11:
+					if (currDotLed == it) rgb = HSVtoHEX(colourCycleHue, colourCycleSat, colourCycleValue);
+					break;
+			}
 		}
 		last_leds[3*it+0] = (rgb>>8);
 		last_leds[3*it+1] = (rgb);
@@ -94,17 +114,43 @@ static void ICACHE_FLASH_ATTR patternTimer(void *arg) {
 	}
 	// Right eyebrow
 	for (it=4; it<8; ++it) {
+		rgb = 0;
 		if (mode < 9) {
 			rgb = HSVtoHEX(getRightEyebrowHue(), getRightEyebrowSat(), getRightEyebrowValue());
+		} else {
+			switch (mode) {
+				case 9:
+				  if (currDotLed == it) rgb = HSVtoHEX(getRightEyebrowHue(), getRightEyebrowSat(), getRightEyebrowValue());
+					break;
+				case 10:
+					rgb = HSVtoHEX(getRightEyebrowHue(), getRightEyebrowSat(), (currDotLed - it == 1 || currDotLed - it == 0) * (((float)(it % 4) + 1.0) / 4.0) * getRightEyebrowValue());
+					break;
+				case 11:
+					if (currDotLed == it) rgb = HSVtoHEX(colourCycleHue, colourCycleSat, colourCycleValue);
+					break;
+			}
 		}
 		last_leds[3*it+0] = (rgb>>8);
 		last_leds[3*it+1] = (rgb);
 		last_leds[3*it+2] = (rgb>>16);
 	}
-	// Left eyebrow
+	// // Left eyebrow
 	for (it=8; it<12; ++it) {
+		rgb = 0;
 		if (mode < 9) {
 			rgb = HSVtoHEX(getLeftEyebrowHue(), getLeftEyebrowSat(), getLeftEyebrowValue());
+		} else {
+			switch (mode) {
+				case 9:
+				  if (currDotLed == it) rgb = HSVtoHEX(getLeftEyebrowHue(), getLeftEyebrowSat(), getLeftEyebrowValue());
+					break;
+				case 10:
+					rgb = HSVtoHEX(getLeftEyebrowHue(), getLeftEyebrowSat(), (currDotLed - it == 1 || currDotLed - it == 0) * (((float)(it % 4) + 1.0) / 4.0) * getLeftEyebrowValue());
+					break;
+				case 11:
+					if (currDotLed == it) rgb = HSVtoHEX(colourCycleHue, colourCycleSat, colourCycleValue);
+					break;
+			}
 		}
 		last_leds[3*it+0] = (rgb>>8);
 		last_leds[3*it+1] = (rgb);
@@ -131,7 +177,7 @@ static void ICACHE_FLASH_ATTR buttonTimer(void *arg) {
 			os_printf("\nLong button press\n");
 		}
 	} else {
-		if (downCnt > 4 && !buttonLongPress) {
+		if (downCnt > 1 && !buttonLongPress) {
 			buttonShortPress = 1;
 			previousLongPress = 0;
 			os_printf("\nShort button press\n");
