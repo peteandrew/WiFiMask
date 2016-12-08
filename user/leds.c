@@ -1,24 +1,24 @@
 #include <c_types.h>
 #include "leds.h"
 
-#define MAX_RED 30
-#define MAX_GREEN 30
-#define MAX_BLUE 30
+#define MAX_HUE 1
+#define MAX_SAT 0.5
+#define MAX_VALUE 1
 
 static uint16_t leds = 12;
 static uint8_t patternNum = 1;
 
-static uint8_t leftEyebrowRed = 0;
-static uint8_t leftEyebrowGreen = 0;
-static uint8_t leftEyebrowBlue = 0;
+static float leftEyebrowHue = 0;
+static float leftEyebrowSat = 0;
+static float leftEyebrowValue = 0;
 
-static uint8_t rightEyebrowRed = 0;
-static uint8_t rightEyebrowGreen = 0;
-static uint8_t rightEyebrowBlue = 0;
+static float rightEyebrowHue = 0;
+static float rightEyebrowSat = 0;
+static float rightEyebrowValue = 0;
 
-static uint8_t tashRed = 0;
-static uint8_t tashGreen = 0;
-static uint8_t tashBlue = 0;
+static float tashHue = 0;
+static float tashSat = 0;
+static float tashValue = 0;
 
 uint16_t ICACHE_FLASH_ATTR getNumLeds() {
   return leds;
@@ -49,59 +49,70 @@ uint8_t ICACHE_FLASH_ATTR getBlue() {
 }
 void ICACHE_FLASH_ATTR setBlue(uint8_t value) {}
 
-uint8_t ICACHE_FLASH_ATTR getLeftEyebrowRed() {
-  return leftEyebrowRed;
+
+
+float ICACHE_FLASH_ATTR getLeftEyebrowHue() {
+  return leftEyebrowHue;
 }
-void ICACHE_FLASH_ATTR incrementLeftEyebrowRed() {
-  if (leftEyebrowRed++ > MAX_RED) leftEyebrowRed = 0;
+void ICACHE_FLASH_ATTR incrementLeftEyebrowHue() {
+  leftEyebrowHue += 0.01;
+  if (leftEyebrowHue > MAX_HUE) leftEyebrowHue = 0;
 }
-uint8_t ICACHE_FLASH_ATTR getLeftEyebrowGreen() {
-  return leftEyebrowGreen;
+float ICACHE_FLASH_ATTR getLeftEyebrowSat() {
+  return leftEyebrowSat;
 }
-void ICACHE_FLASH_ATTR incrementLeftEyebrowGreen() {
-  if (leftEyebrowGreen++ > MAX_GREEN) leftEyebrowGreen = 0;
+void ICACHE_FLASH_ATTR incrementLeftEyebrowSat() {
+  leftEyebrowSat += 0.01;
+  if (leftEyebrowSat > MAX_SAT) leftEyebrowSat = 0;
 }
-uint8_t ICACHE_FLASH_ATTR getLeftEyebrowBlue() {
-  return leftEyebrowBlue;
+float ICACHE_FLASH_ATTR getLeftEyebrowValue() {
+  return leftEyebrowValue;
 }
-void ICACHE_FLASH_ATTR incrementLeftEyebrowBlue() {
-  if (leftEyebrowBlue++ > MAX_BLUE) leftEyebrowBlue = 0;
+void ICACHE_FLASH_ATTR incrementLeftEyebrowValue() {
+  leftEyebrowValue += 0.01;
+  if (leftEyebrowValue++ > MAX_VALUE) leftEyebrowValue = 0;
 }
 
-uint8_t ICACHE_FLASH_ATTR getRightEyebrowRed() {
-  return rightEyebrowRed;
+float ICACHE_FLASH_ATTR getRightEyebrowHue() {
+  return rightEyebrowHue;
 }
-void ICACHE_FLASH_ATTR incrementRightEyebrowRed() {
-  if (rightEyebrowRed++ > MAX_RED) rightEyebrowRed = 0;
+void ICACHE_FLASH_ATTR incrementRightEyebrowHue() {
+  rightEyebrowHue += 0.01;
+  if (rightEyebrowHue > MAX_HUE) rightEyebrowHue = 0;
 }
-uint8_t ICACHE_FLASH_ATTR getRightEyebrowGreen() {
-  return rightEyebrowGreen;
+float ICACHE_FLASH_ATTR getrightEyebrowSat() {
+  return rightEyebrowSat;
 }
-void ICACHE_FLASH_ATTR incrementRightEyebrowGreen() {
-  if (rightEyebrowGreen++ > MAX_GREEN) rightEyebrowGreen = 0;
+void ICACHE_FLASH_ATTR incrementRightEyebrowSat() {
+  rightEyebrowSat += 0.01;
+  if (rightEyebrowSat > MAX_SAT) rightEyebrowSat = 0;
 }
-uint8_t ICACHE_FLASH_ATTR getRightEyebrowBlue() {
-  return rightEyebrowBlue;
+float ICACHE_FLASH_ATTR getRightEyebrowValue() {
+  return rightEyebrowValue;
 }
-void ICACHE_FLASH_ATTR incrementRightEyebrowBlue() {
-  if (rightEyebrowBlue++ > MAX_BLUE) rightEyebrowBlue = 0;
+void ICACHE_FLASH_ATTR incrementRightEyebrowValue() {
+  rightEyebrowValue += 0.01;
+  if (rightEyebrowValue++ > MAX_VALUE) rightEyebrowValue = 0;
 }
 
-uint8_t ICACHE_FLASH_ATTR getTashRed() {
-  return tashRed;
+float ICACHE_FLASH_ATTR getTashHue() {
+  return tashHue;
 }
-void ICACHE_FLASH_ATTR incrementTashRed() {
-  if (tashRed++ > MAX_RED) tashRed = 0;
+void ICACHE_FLASH_ATTR incrementTashHue() {
+  tashHue += 0.01;
+  if (tashHue > MAX_HUE) tashHue = 0;
 }
-uint8_t ICACHE_FLASH_ATTR getTashGreen() {
-  return tashGreen;
+float ICACHE_FLASH_ATTR getTashSat() {
+  return tashSat;
 }
-void ICACHE_FLASH_ATTR incrementTashGreen() {
-  if (tashGreen++ > MAX_GREEN) tashGreen = 0;
+void ICACHE_FLASH_ATTR incrementTashSat() {
+  tashSat += 0.01;
+  if (tashSat > MAX_SAT) tashSat = 0;
 }
-uint8_t ICACHE_FLASH_ATTR getTashBlue() {
-  return tashBlue;
+float ICACHE_FLASH_ATTR getTashValue() {
+  return tashValue;
 }
-void ICACHE_FLASH_ATTR incrementTashBlue() {
-  if (tashBlue++ > MAX_BLUE) tashBlue = 0;
+void ICACHE_FLASH_ATTR incrementTashValue() {
+  tashValue += 0.01;
+  if (tashValue++ > MAX_VALUE) tashValue = 0;
 }

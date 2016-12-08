@@ -16,25 +16,26 @@ void setGreen(uint8_t value);
 uint8_t getBlue();
 void setBlue(uint8_t value);
 
-uint8_t getLeftEyebrowRed();
-void incrementLeftEyebrowRed();
-uint8_t getLeftEyebrowGreen();
-void incrementLeftEyebrowGreen();
-uint8_t getLeftEyebrowBlue();
-void incrementLeftEyebrowBlue();
 
-uint8_t getRightEyebrowRed();
-void incrementRightEyebrowRed();
-uint8_t getRightEyebrowGreen();
-void incrementRightEyebrowGreen();
-uint8_t getRightEyebrowBlue();
-void incrementRightEyebrowBlue();
+float getLeftEyebrowHue();
+void incrementLeftEyebrowHue();
+float getLeftEyebrowSat();
+void incrementLeftEyebrowSat();
+float getLeftEyebrowValue();
+void incrementLeftEyebrowValue();
 
-uint8_t getTashRed();
-void incrementTashRed();
-uint8_t getTashGreen();
-void incrementTashGreen();
-uint8_t getTashBlue();
-void incrementTashBlue();
+float getRightEyebrowHue();
+void incrementRightEyebrowHue();
+float getrightEyebrowSat();
+void incrementRightEyebrowSat();
+float getRightEyebrowValue();
+void incrementRightEyebrowValue();
+
+float getTashHue();
+void incrementTashHue();
+float getTashSat();
+void incrementTashSat();
+float getTashValue();
+void incrementTashValue();
 
 #endif
