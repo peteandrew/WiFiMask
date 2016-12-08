@@ -5,15 +5,21 @@
 #include "pattern.h"
 
 
-// 0 - left eyebrow hue
-// 1 - left eyebrow sat
-// 2 - left eyebrow value
-// 3 - right eyebrow hue
-// 4 - right eyebrow sat
-// 5 - right eyebrow value
-// 6 - tash hue
-// 7 - tash sat
-// 8 - tash value
+// 0 - static left eyebrow hue
+// 1 - static left eyebrow sat
+// 2 - static left eyebrow value
+// 3 - static right eyebrow hue
+// 4 - static right eyebrow sat
+// 5 - static right eyebrow value
+// 6 - static tash hue
+// 7 - static tash sat
+// 8 - static tash value
+// 9 - moving dot using feature colour
+		// Check if currDotLed == it
+// 10 - moving dot using feature colour different intensity per feature led
+		// Multiply saturation by (it % 4) / 4
+// 11 - colour cycle different colour per feature
+// 12 - moving dot colour cycle
 uint8_t mode = 0;
 uint8_t last_leds[512*3] = {0};
 uint32_t frame = 0;
@@ -25,7 +31,7 @@ uint8_t buttonLongPress = 0;
 static ETSTimer pattern_timer;
 static void ICACHE_FLASH_ATTR patternTimer(void *arg) {
 	if (buttonShortPress) {
-		if (++mode > 8) {
+		if (++mode > 12) {
 			mode = 0;
 		}
 		buttonShortPress = 0;
@@ -72,6 +78,8 @@ static void ICACHE_FLASH_ATTR patternTimer(void *arg) {
 		}
 		buttonLongPress = 0;
 	}
+
+	int currDotLed = frame % 12;
 
 	int it;
 	uint32_t rgb;
