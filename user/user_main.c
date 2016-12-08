@@ -89,16 +89,16 @@ static void ICACHE_FLASH_ATTR patternTimer(void *arg) {
 	}
 
 	int it;
-	// Left eyebrow
+	// Tash
 	for (it=0; it<4; ++it) {
 		if (mode < 3) {
 			last_leds[3*it+0] = getRed();
 			last_leds[3*it+1] = getBlue();
 			last_leds[3*it+2] = getGreen();
 		} else {
-			last_leds[3*it+0] = getLeftEyebrowRed();
-			last_leds[3*it+1] = getLeftEyebrowBlue();
-			last_leds[3*it+2] = getLeftEyebrowGreen();
+			last_leds[3*it+0] = getTashRed();
+			last_leds[3*it+1] = getTashBlue();
+			last_leds[3*it+2] = getTashGreen();
 		}
 	}
 	// Right eyebrow
@@ -113,16 +113,16 @@ static void ICACHE_FLASH_ATTR patternTimer(void *arg) {
 			last_leds[3*it+2] = getRightEyebrowGreen();
 		}
 	}
-	// Tash
+	// Left eyebrow
 	for (it=8; it<12; ++it) {
 		if (mode < 3) {
 			last_leds[3*it+0] = getRed();
 			last_leds[3*it+1] = getBlue();
 			last_leds[3*it+2] = getGreen();
 		} else {
-			last_leds[3*it+0] = getTashRed();
-			last_leds[3*it+1] = getTashBlue();
-			last_leds[3*it+2] = getTashGreen();
+			last_leds[3*it+0] = getLeftEyebrowRed();
+			last_leds[3*it+1] = getLeftEyebrowBlue();
+			last_leds[3*it+2] = getLeftEyebrowGreen();
 		}
 	}
 
