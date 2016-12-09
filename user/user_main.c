@@ -6,24 +6,18 @@
 
 
 // 0 - static left eyebrow hue
-// 1 - static left eyebrow sat
-// 2 - static left eyebrow value
-// 3 - static right eyebrow hue
-// 4 - static right eyebrow sat
-// 5 - static right eyebrow value
-// 6 - static tash hue
-// 7 - static tash sat
-// 8 - static tash value
-// 9 - moving dot using feature colour
-// 10 - moving dot using feature colour different intensity per feature led
-// 11 - moving dot colour cycle
+// 1 - static right eyebrow hue
+// 2 - static tash hue
+// 3 - moving dot using feature colour
+// 4 - moving dot using feature colour different intensity per feature led
+// 5 - moving dot colour cycle
 uint8_t mode = 0;
 uint8_t last_leds[512*3] = {0};
 uint32_t frame = 0;
 
 float colourCycleHue = 0.05;
 float colourCycleSat = 1;
-float colourCycleValue = 0.05;
+float colourCycleValue = 0.07;
 
 uint8_t buttonShortPress = 0;
 uint8_t buttonLongPress = 0;
@@ -32,7 +26,7 @@ uint8_t buttonLongPress = 0;
 static ETSTimer pattern_timer;
 static void ICACHE_FLASH_ATTR patternTimer(void *arg) {
 	if (buttonShortPress) {
-		if (++mode > 11) {
+		if (++mode > 5) {
 			mode = 0;
 		}
 		buttonShortPress = 0;
@@ -45,36 +39,12 @@ static void ICACHE_FLASH_ATTR patternTimer(void *arg) {
 				os_printf("\nIncrement left eyebrow hue\n");
 				break;
 			case 1:
-			  incrementLeftEyebrowSat();
-				os_printf("\nIncrement left eyebrow sat\n");
-				break;
-			case 2:
-			  incrementLeftEyebrowValue();
-				os_printf("\nIncrement left eyebrow value\n");
-				break;
-			case 3:
 			  incrementRightEyebrowHue();
 				os_printf("\nIncrement right eyebrow hue\n");
 				break;
-			case 4:
-			  incrementRightEyebrowSat();
-				os_printf("\nIncrement right eyebrow sat\n");
-				break;
-			case 5:
-			  incrementRightEyebrowValue();
-				os_printf("\nIncrement right eyebrow value\n");
-				break;
-			case 6:
+			case 2:
 			  incrementTashHue();
 				os_printf("\nIncrement tash hue\n");
-				break;
-			case 7:
-			  incrementTashSat();
-				os_printf("\nIncrement tash sat\n");
-				break;
-			case 8:
-			  incrementTashValue();
-				os_printf("\nIncrement tash value\n");
 				break;
 		}
 		buttonLongPress = 0;
@@ -93,17 +63,17 @@ static void ICACHE_FLASH_ATTR patternTimer(void *arg) {
 	// Tash
 	for (it=0; it<4; ++it) {
 		rgb = 0;
-		if (mode < 9) {
+		if (mode < 3) {
 			rgb = HSVtoHEX(getTashHue(), getTashSat(), getTashValue());
 		} else {
 			switch (mode) {
-				case 9:
+				case 3:
 				  if (currDotLed == it) rgb = HSVtoHEX(getTashHue(), getTashSat(), getTashValue());
 					break;
-				case 10:
+				case 4:
 					rgb = HSVtoHEX(getTashHue(), getTashSat(), (currDotLed - it == 1 || currDotLed - it == 0) * (((float)(it % 4) + 1.0) / 4.0) * getTashValue());
 					break;
-				case 11:
+				case 5:
 					if (currDotLed == it) rgb = HSVtoHEX(colourCycleHue, colourCycleSat, colourCycleValue);
 					break;
 			}
@@ -115,17 +85,17 @@ static void ICACHE_FLASH_ATTR patternTimer(void *arg) {
 	// Right eyebrow
 	for (it=4; it<8; ++it) {
 		rgb = 0;
-		if (mode < 9) {
+		if (mode < 3) {
 			rgb = HSVtoHEX(getRightEyebrowHue(), getRightEyebrowSat(), getRightEyebrowValue());
 		} else {
 			switch (mode) {
-				case 9:
+				case 3:
 				  if (currDotLed == it) rgb = HSVtoHEX(getRightEyebrowHue(), getRightEyebrowSat(), getRightEyebrowValue());
 					break;
-				case 10:
+				case 4:
 					rgb = HSVtoHEX(getRightEyebrowHue(), getRightEyebrowSat(), (currDotLed - it == 1 || currDotLed - it == 0) * (((float)(it % 4) + 1.0) / 4.0) * getRightEyebrowValue());
 					break;
-				case 11:
+				case 5:
 					if (currDotLed == it) rgb = HSVtoHEX(colourCycleHue, colourCycleSat, colourCycleValue);
 					break;
 			}
@@ -137,17 +107,17 @@ static void ICACHE_FLASH_ATTR patternTimer(void *arg) {
 	// // Left eyebrow
 	for (it=8; it<12; ++it) {
 		rgb = 0;
-		if (mode < 9) {
+		if (mode < 3) {
 			rgb = HSVtoHEX(getLeftEyebrowHue(), getLeftEyebrowSat(), getLeftEyebrowValue());
 		} else {
 			switch (mode) {
-				case 9:
+				case 3:
 				  if (currDotLed == it) rgb = HSVtoHEX(getLeftEyebrowHue(), getLeftEyebrowSat(), getLeftEyebrowValue());
 					break;
-				case 10:
+				case 4:
 					rgb = HSVtoHEX(getLeftEyebrowHue(), getLeftEyebrowSat(), (currDotLed - it == 1 || currDotLed - it == 0) * (((float)(it % 4) + 1.0) / 4.0) * getLeftEyebrowValue());
 					break;
-				case 11:
+				case 5:
 					if (currDotLed == it) rgb = HSVtoHEX(colourCycleHue, colourCycleSat, colourCycleValue);
 					break;
 			}

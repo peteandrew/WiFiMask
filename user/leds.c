@@ -4,22 +4,22 @@
 #define MAX_HUE 1
 #define MIN_SAT 0.6
 #define MAX_SAT 1
-#define MAX_VALUE 0.08
+#define MAX_VALUE 0.09
 
 static uint16_t leds = 12;
 static uint8_t patternNum = 1;
 
 static float leftEyebrowHue = 0.05;
-static float leftEyebrowSat = 1;
-static float leftEyebrowValue = 0.05;
+static float leftEyebrowSat = MAX_SAT;
+static float leftEyebrowValue = MAX_VALUE;
 
 static float rightEyebrowHue = 0.01;
-static float rightEyebrowSat = 0.8;
-static float rightEyebrowValue = 0.05;
+static float rightEyebrowSat = MAX_SAT;
+static float rightEyebrowValue = MAX_VALUE;
 
 static float tashHue = 0.7;
-static float tashSat = 0.7;
-static float tashValue = 0.05;
+static float tashSat = MAX_SAT;
+static float tashValue = MAX_VALUE;
 
 uint16_t ICACHE_FLASH_ATTR getNumLeds() {
   return leds;
@@ -56,7 +56,7 @@ float ICACHE_FLASH_ATTR getLeftEyebrowHue() {
   return leftEyebrowHue;
 }
 void ICACHE_FLASH_ATTR incrementLeftEyebrowHue() {
-  leftEyebrowHue += 0.005;
+  leftEyebrowHue += 0.01;
   if (leftEyebrowHue > MAX_HUE) leftEyebrowHue = 0;
 }
 float ICACHE_FLASH_ATTR getLeftEyebrowSat() {
@@ -78,7 +78,7 @@ float ICACHE_FLASH_ATTR getRightEyebrowHue() {
   return rightEyebrowHue;
 }
 void ICACHE_FLASH_ATTR incrementRightEyebrowHue() {
-  rightEyebrowHue += 0.005;
+  rightEyebrowHue += 0.01;
   if (rightEyebrowHue > MAX_HUE) rightEyebrowHue = 0;
 }
 float ICACHE_FLASH_ATTR getRightEyebrowSat() {
@@ -100,7 +100,7 @@ float ICACHE_FLASH_ATTR getTashHue() {
   return tashHue;
 }
 void ICACHE_FLASH_ATTR incrementTashHue() {
-  tashHue += 0.005;
+  tashHue += 0.01;
   if (tashHue > MAX_HUE) tashHue = 0;
 }
 float ICACHE_FLASH_ATTR getTashSat() {
