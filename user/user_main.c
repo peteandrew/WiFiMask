@@ -11,9 +11,11 @@
 // 3 - moving dot using feature colour
 // 4 - moving dot using feature colour different intensity per feature led
 // 5 - moving dot colour cycle
+// 6 - random led
 uint8_t mode = 0;
 uint8_t last_leds[512*3] = {0};
 uint32_t frame = 0;
+int lastLed = 99;
 
 float colourCycleHue = 0.05;
 float colourCycleSat = 1;
@@ -26,7 +28,7 @@ uint8_t buttonLongPress = 0;
 static ETSTimer pattern_timer;
 static void ICACHE_FLASH_ATTR patternTimer(void *arg) {
 	if (buttonShortPress) {
-		if (++mode > 5) {
+		if (++mode > 6) {
 			mode = 0;
 		}
 		buttonShortPress = 0;
@@ -50,12 +52,16 @@ static void ICACHE_FLASH_ATTR patternTimer(void *arg) {
 		buttonLongPress = 0;
 	}
 
-	int currDotLed = (frame/5) % 24;
+	int currDotLed = (frame/5) % 18;
 	if (frame % 12 == 0) {
   	colourCycleHue += 0.01;
 		if (colourCycleHue > 1) {
 			colourCycleHue = 0;
 		}
+	}
+	int randomLed;
+	if (mode == 6) {
+		randomLed = os_random() % 12;
 	}
 
 	int it;
@@ -75,6 +81,10 @@ static void ICACHE_FLASH_ATTR patternTimer(void *arg) {
 					break;
 				case 5:
 					if (currDotLed == it) rgb = HSVtoHEX(colourCycleHue, colourCycleSat, colourCycleValue);
+					break;
+				case 6:
+					if (randomLed == it) rgb = HSVtoHEX(getTashHue(), getTashSat(), getTashValue());
+					if (lastLed == it) rgb = HSVtoHEX(getTashHue(), getTashSat(), getTashValue() * 0.3);
 					break;
 			}
 		}
@@ -98,6 +108,10 @@ static void ICACHE_FLASH_ATTR patternTimer(void *arg) {
 				case 5:
 					if (currDotLed == it) rgb = HSVtoHEX(colourCycleHue, colourCycleSat, colourCycleValue);
 					break;
+				case 6:
+					if (randomLed == it) rgb = HSVtoHEX(getRightEyebrowHue(), getRightEyebrowSat(), getRightEyebrowValue());
+					if (lastLed == it) rgb = HSVtoHEX(getRightEyebrowHue(), getRightEyebrowSat(), getRightEyebrowValue() * 0.3);
+					break;
 			}
 		}
 		last_leds[3*it+0] = (rgb>>8);
@@ -120,6 +134,10 @@ static void ICACHE_FLASH_ATTR patternTimer(void *arg) {
 				case 5:
 					if (currDotLed == it) rgb = HSVtoHEX(colourCycleHue, colourCycleSat, colourCycleValue);
 					break;
+				case 6:
+					if (randomLed == it) rgb = HSVtoHEX(getLeftEyebrowHue(), getLeftEyebrowSat(), getLeftEyebrowValue());
+					if (lastLed == it) rgb = HSVtoHEX(getLeftEyebrowHue(), getLeftEyebrowSat(), getLeftEyebrowValue() * 0.3);
+					break;
 			}
 		}
 		last_leds[3*it+0] = (rgb>>8);
@@ -127,6 +145,9 @@ static void ICACHE_FLASH_ATTR patternTimer(void *arg) {
 		last_leds[3*it+2] = (rgb>>16);
 	}
 
+	if (mode == 6) {
+		lastLed = randomLed;
+	}
 	frame++;
 
   ws2812_push( last_leds, 3*getNumLeds());
