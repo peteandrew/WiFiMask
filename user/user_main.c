@@ -59,8 +59,8 @@ static void ICACHE_FLASH_ATTR patternTimer(void *arg) {
 			colourCycleHue = 0;
 		}
 	}
-	int randomLed;
-	if (mode == 6) {
+	int randomLed = 99;
+	if (mode == 6 && frame % 12 == 0) {
 		randomLed = os_random() % 12;
 	}
 
